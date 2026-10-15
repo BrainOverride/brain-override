@@ -22,3 +22,14 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Build output (javac -d out)
+out/
+
+# IntelliJ (개인 설정이라 올리지 않음)
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
