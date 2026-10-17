@@ -3,8 +3,6 @@ package core;
 // 담당: 심소민
 // 한 판의 결과. 만든 뒤에는 바뀌지 않도록 모든 필드를 final로 둡니다.
 public final class GameResult {
-    public static final int BASE_SCORE = 100;
-
     private final boolean success;
     private final int baseScore;
     private final double elapsedSeconds;    // 소요 시간
@@ -12,7 +10,7 @@ public final class GameResult {
 
     public GameResult(boolean success, double elapsedSeconds, double standardSeconds) {
         this.success = success;
-        this.baseScore = BASE_SCORE;
+        this.baseScore = 100;   // 기본 점수로 초기화
         this.elapsedSeconds = elapsedSeconds;
         this.standardSeconds = standardSeconds;
     }

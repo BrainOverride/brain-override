@@ -11,4 +11,5 @@ public abstract class Difficulty {
 
     // 1판 최대 점수 (두뇌 나이의 만점 계산용)
     public abstract int maxScore();
+
 }

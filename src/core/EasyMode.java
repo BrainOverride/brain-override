@@ -11,12 +11,21 @@ public class EasyMode extends Difficulty {
     @Override
     public int calcScore(GameResult result) {
         // TODO
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return result.isSuccess() ? result.getBaseScore() : 0;
     }
 
     @Override
     public void onFail(Player player, MiniGame game) {
         // TODO
+        GameResult retry = game.playRound(this);
+        if (retry.isSuccess()) {
+            player.addScore(calcScore(retry));
+        } else {
+            player.loseLife();
+        }
+
+
     }
 
     @Override
