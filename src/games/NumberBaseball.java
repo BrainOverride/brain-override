@@ -1,10 +1,6 @@
 package games;
 
-import core.Difficulty;
-import core.GameResult;
-import core.MiniGame;
-import core.NormalMode;
-import core.Player;
+import core.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,46 +16,91 @@ public class NumberBaseball extends MiniGame {
 
     @Override
     protected GameResult playRound(Difficulty difficulty) {
-        // 난이도에 따른 숫자 자릿수와 최대 시도 횟수 설정
+        // 난이도별 숫자 자릿수, 최대 시도 횟수, 기준 시간 설정
         int digits;
         int maxAttempts;
+        double standardSeconds;
 
         // 선택한 난이도의 이름 가져오기
         String level = difficulty.getLabel();
 
         // 난이도별 조건문
         if (level.equals("Easy")) {
-             digits = 3;
-             maxAttempts = 10;
+            digits = 3;
+            maxAttempts = 10;
+            standardSeconds = 180;
         } else if (level.equals("Normal")) {
             digits = 4;
             maxAttempts = 10;
+            standardSeconds = 180;
         } else {
             digits = 4;
             maxAttempts = 8;
+            standardSeconds = 150;
         }
 
+        // 난이도에 맞는 자릿수의 랜덤 정답 생성
         String answer = generateAnswer(digits);
 
+        // 게임 시작 시간 기록
+        long startTime = System.nanoTime();
 
-        throw new UnsupportedOperationException("TODO");
+        // 현재 시도 횟수
+        int attempt = 0;
+
+        // 최대 시도 횟수에 도달할 때까지 반복
+        while (attempt < maxAttempts) {
+            // 사용자에게 숫자 입력받기
+            String input = ConsoleUtil.readLine("숫자를 입력하세요: ");
+
+            // 잘못된 입력이면 다시 입력받기
+            if (!isValidInput(input, digits)) {
+                System.out.println("숫자를 다시 입력하세요:");
+                continue;
+            }
+
+            // 유효한 입력만 시도 횟수에 포함
+            attempt++;
+
+            // 정답과 입력값 비교하여 스트라이크와 볼 계산
+            int strikes = countStrikes(answer, input);
+            int balls = countBalls(answer, input);
+
+            System.out.println(strikes + "S" + "   " + balls + "B");
+
+            // 모든 자릿수 일치하면 성공처리
+            if (strikes == digits) {
+                System.out.println("정답입니다!");
+
+                // 경과 시간 계산 후 성공 결과 반환
+                long endTime = System.nanoTime();
+                double elapsedSeconds = (endTime - startTime) / 1_000_000_000.0;
+
+                return new GameResult(true, elapsedSeconds, standardSeconds);
+            }
+        }
+
+        // 최대 시도 횟수를 모두 사용한 경우
+        System.out.println("실패했습니다! 정답은 " + answer + "입니다");
+
+        // 게임 종료 시간 및 경과 시간 계산
+        long endTime = System.nanoTime();
+        double elapsedSeconds = (endTime - startTime) / 1_000_000_000.0;
+
+        return new GameResult(false, elapsedSeconds, standardSeconds);
     }
 
-//    // 테스트용: 메뉴 없이 이 게임만 실행
-//    public static void main(String[] args) {
-//
-//        new NumberBaseball().play(new Player("테스트"), new NormalMode());
-//    }
+    // 테스트용: 메뉴 없이 이 게임만 실행
+    public static void main(String[] args) {
 
-
-
-
+        new NumberBaseball().play(new Player("테스트"), new NormalMode());
+    }
 
 
     // 사용자 입력 검증 메서드
     private boolean isValidInput(String input, int digits) {
         // 입력한 숫자의 자릿수가 맞는지 확인
-        if (input.length() != digits ) {
+        if (input.length() != digits) {
             return false;
         }
         // 숫자가 아닌 문자가 포함되어 있으면 유효하지 않은 입력으로 처리
@@ -67,8 +108,8 @@ public class NumberBaseball extends MiniGame {
             return false;
         }
         // 입력한 숫자에 중복이 있는지 검사
-        for (int i=0; i<input.length(); i++) {
-            for (int j=i+1; j<input.length(); j++) {
+        for (int i = 0; i < input.length(); i++) {
+            for (int j = i + 1; j < input.length(); j++) {
                 if (input.charAt(i) == input.charAt(j)) {
                     return false;
                 }
@@ -84,7 +125,7 @@ public class NumberBaseball extends MiniGame {
         List<Integer> numbers = new ArrayList<>();
 
         // 0~9 저장
-        for (int i=0; i<10 ; i++) {
+        for (int i = 0; i < 10; i++) {
             numbers.add(i);
         }
 
@@ -95,7 +136,7 @@ public class NumberBaseball extends MiniGame {
         StringBuilder answer = new StringBuilder();
 
         // 앞에서  digits개 선택
-        for (int i=0 ; i<digits;i++){
+        for (int i = 0; i < digits; i++) {
             answer.append(numbers.get(i));
         }
 
@@ -107,9 +148,9 @@ public class NumberBaseball extends MiniGame {
     private int countStrikes(String answer, String input) {
         int strikes = 0;
 
-        for (int i=0 ; i<input.length(); i++){
+        for (int i = 0; i < input.length(); i++) {
             if (answer.charAt(i) == input.charAt(i)) {
-                strikes ++;
+                strikes++;
             }
         }
         return strikes;
