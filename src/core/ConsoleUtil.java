@@ -12,42 +12,77 @@ public final class ConsoleUtil {
     public static final String YELLOW = "\u001B[33m";
     public static final String BLUE = "\u001B[34m";
 
+    private static final String CLEAR_SCREEN = "\u001B[H\u001B[2J";
+
     private static final Scanner SCANNER = new Scanner(System.in);
+
 
     private ConsoleUtil() {
     }
 
     // 한 줄 입력. 모든 입력은 nextLine()으로 받습니다 (nextInt() 금지).
     public static String readLine(String prompt) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        System.out.println(prompt);
+        String line = SCANNER.nextLine();
+        return line;
     }
 
     // 정수가 들어올 때까지 재입력 요청
     public static int readInt(String prompt) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+
+        while (true) {
+            System.out.print(prompt);
+            String line = SCANNER.nextLine();
+            try {
+                return Integer.parseInt(line.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("※ 숫자를 입력하세요.");
+            }
+        }
     }
 
     // min~max 범위의 정수가 들어올 때까지 재입력 요청
     public static int readInt(String prompt, int min, int max) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+
+        while (true) {
+            System.out.print(prompt);
+            String line = SCANNER.nextLine();
+
+            try {
+                int num = Integer.parseInt(line.trim());
+                if (min <= num && num <= max) {
+                    return num;
+                }
+                System.out.println("※ " + min + " ~ " + max + " 범위의 숫자를 입력하세요.");
+            } catch (NumberFormatException e) {
+                System.out.println("※ 숫자를 입력하세요.");
+            }
+        }
     }
 
     // InterruptedException 처리를 여기서 한 번만 합니다.
     public static void sleep(long millis) {
-        // TODO
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();  // 인터럽트 상태 복원 (관례)
+        }
     }
 
     // ANSI 화면 지우기. IntelliJ Run 콘솔에서는 빈 줄로 밀어내는 방식으로 대체
     public static void clearScreen() {
-        // TODO
+        // 콘솔 시연용
+//        System.out.print(CLEAR_SCREEN);
+//        System.out.flush();   // print()는 줄바꿈이 없어 자동 flush가 안 됨 — 명시적으로 필요
+
+        // Intellij 눈속임
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
     }
 
     // text를 colorCode 색으로 칠하고 뒤에 RESET을 붙여 반환
     public static String color(String text, String colorCode) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return colorCode + text + RESET;
     }
 }
