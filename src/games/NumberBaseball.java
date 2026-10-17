@@ -45,6 +45,17 @@ public class NumberBaseball extends MiniGame {
         throw new UnsupportedOperationException("TODO");
     }
 
+//    // 테스트용: 메뉴 없이 이 게임만 실행
+//    public static void main(String[] args) {
+//
+//        new NumberBaseball().play(new Player("테스트"), new NormalMode());
+//    }
+
+
+
+
+
+    // 사용자 입력 검증 메서드
     private boolean isValidInput(String input, int digits) {
         // 입력한 숫자의 자릿수가 맞는지 확인
         if (input.length() != digits ) {
@@ -65,11 +76,6 @@ public class NumberBaseball extends MiniGame {
         return true;
     }
 
-    // 테스트용: 메뉴 없이 이 게임만 실행
-    public static void main(String[] args) {
-
-        new NumberBaseball().play(new Player("테스트"), new NormalMode());
-    }
 
     // 중복 없는 랜덤 숫자를 생성하는 메서드
     private String generateAnswer(int digits) {
@@ -94,6 +100,18 @@ public class NumberBaseball extends MiniGame {
 
         // 정답을 문자열로 반환
         return answer.toString();
+    }
+
+    // 정답과 입력값의 숫자 및 위치가 일치하는 개수 계산
+    private int countStrikes(String answer, String input) {
+        int strikes = 0;
+
+        for (int i=0 ; i<input.length(); i++){
+            if (answer.charAt(i) == input.charAt(i)) {
+                strikes ++;
+            }
+        }
+        return strikes;
     }
 
 }
