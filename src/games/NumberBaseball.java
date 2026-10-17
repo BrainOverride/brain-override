@@ -55,6 +55,7 @@ public class NumberBaseball extends MiniGame {
 
 
 
+
     // 사용자 입력 검증 메서드
     private boolean isValidInput(String input, int digits) {
         // 입력한 숫자의 자릿수가 맞는지 확인
@@ -112,6 +113,19 @@ public class NumberBaseball extends MiniGame {
             }
         }
         return strikes;
+    }
+
+    // 정답에 포함되어 있지만 위치가 다른 숫자의 개수 계산
+    private int countBalls(String answer, String input) {
+        int balls = 0;
+
+        for (int i = 0; i < input.length(); i++) {
+            if ((answer.indexOf(input.charAt(i)) >= 0)
+                    && (answer.charAt(i) != input.charAt(i))) {
+                balls++;
+            }
+        }
+        return balls;
     }
 
 }
