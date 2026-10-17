@@ -42,11 +42,25 @@ public class NumberBaseball extends MiniGame {
         // 난이도에 맞는 자릿수의 랜덤 정답 생성
         String answer = generateAnswer(digits);
 
+        // Hard 난이도 시작 시 거짓 힌트 규칙 안내
+        if (level.equals("Hard")) {
+            System.out.println("힌트 중 1번은 거짓입니다.");
+        }
+
         // 게임 시작 시간 기록
         long startTime = System.nanoTime();
 
         // 현재 시도 횟수
         int attempt = 0;
+
+        // Hard 난이도에서 거짓 힌트를 제공할 시도 번호
+        int lieAttempt = level.equals("Hard")
+                ? (int) (Math.random() * (maxAttempts - 1)) + 1
+                : -1;
+
+        // 실제로 거짓 힌트를 제공했는지 기록
+        int usedLieAttempt = -1;
+
 
         // 최대 시도 횟수에 도달할 때까지 반복
         while (attempt < maxAttempts) {
@@ -66,11 +80,23 @@ public class NumberBaseball extends MiniGame {
             int strikes = countStrikes(answer, input);
             int balls = countBalls(answer, input);
 
-            System.out.println(strikes + "S" + "   " + balls + "B");
+            // 정답을 맞히지 못했고 거짓 힌트 차례라면 힌트를 변경
+            if (level.equals("Hard") && attempt == lieAttempt && strikes != digits) {
+                int[] fakeHint = generateFakeHint(strikes, balls, digits);
+
+                System.out.println(fakeHint[0] + "S   " + fakeHint[1] + "B");
+                usedLieAttempt = attempt;
+            } else {
+                System.out.println(strikes + "S" + "   " + balls + "B");
+            }
 
             // 모든 자릿수 일치하면 성공처리
             if (strikes == digits) {
                 System.out.println("정답입니다!");
+
+            if (level.equals("Hard")) {
+                printLieResult(usedLieAttempt);
+            }
 
                 // 경과 시간 계산 후 성공 결과 반환
                 long endTime = System.nanoTime();
@@ -83,6 +109,10 @@ public class NumberBaseball extends MiniGame {
         // 최대 시도 횟수를 모두 사용한 경우
         System.out.println("실패했습니다! 정답은 " + answer + "입니다");
 
+        if (level.equals("Hard")) {
+            printLieResult(usedLieAttempt);
+        }
+
         // 게임 종료 시간 및 경과 시간 계산
         long endTime = System.nanoTime();
         double elapsedSeconds = (endTime - startTime) / 1_000_000_000.0;
@@ -93,7 +123,7 @@ public class NumberBaseball extends MiniGame {
     // 테스트용: 메뉴 없이 이 게임만 실행
     public static void main(String[] args) {
 
-        new NumberBaseball().play(new Player("테스트"), new NormalMode());
+        new NumberBaseball().play(new Player("테스트"), new HardMode());
     }
 
 
@@ -167,6 +197,51 @@ public class NumberBaseball extends MiniGame {
             }
         }
         return balls;
+    }
+
+    // 실제 힌트와 다르면서 숫자야구 규칙상 가능한 거짓 힌트 생성
+    private int[] generateFakeHint(int strikes, int balls, int digits) {
+        List<int[]> candidates = new ArrayList<>();
+
+        for (int fakeStrikes = 0; fakeStrikes <= digits; fakeStrikes++) {
+            for (int fakeBalls = 0; fakeBalls <= digits; fakeBalls++) {
+
+                // 스트라이크와 볼의 합은 자릿수를 초과할 수 없음
+                if (fakeStrikes + fakeBalls > digits) {
+                    continue;
+                }
+
+                // 전체 자릿수 중 한 자리만 볼인 조합은 불가능
+                if (fakeStrikes == digits - 1 && fakeBalls == 1) {
+                    continue;
+                }
+
+                // 전체 스트라이크는 정답이므로 거짓 힌트에서 제외
+                if (fakeStrikes == digits) {
+                    continue;
+                }
+
+                // 실제 힌트와 같은 조합은 제외
+                if (fakeStrikes == strikes && fakeBalls == balls) {
+                    continue;
+                }
+
+                candidates.add(new int[]{fakeStrikes, fakeBalls});
+            }
+        }
+
+        // 가능한 거짓 힌트 중 하나를 무작위 선택
+        Collections.shuffle(candidates);
+        return candidates.get(0);
+    }
+
+    // Hard 난이도 종료 시 거짓 힌트를 제공한 시도 공개
+    private void printLieResult(int usedLieAttempt) {
+        if (usedLieAttempt == -1) {
+            System.out.println("거짓 힌트가 나오기 전에 게임이 종료되었습니다.");
+        } else {
+            System.out.println("거짓 힌트는 " + usedLieAttempt + "번째 시도에서 제공되었습니다!");
+        }
     }
 
 }
