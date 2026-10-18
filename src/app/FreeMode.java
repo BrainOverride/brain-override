@@ -51,6 +51,9 @@ public class FreeMode extends GameMode {
             difficulty = new HardMode();
         }
 
+        // 선택한 게임의 만점 누적
+        player.addMaxScore(difficulty.maxScore());
+
         // 선택한 게임 실행
         selectedGame.play(player, difficulty);
 

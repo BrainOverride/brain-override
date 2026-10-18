@@ -85,24 +85,34 @@ public class BrainCenter {
         System.out.println();
         System.out.println("=== 최종 결과 ===");
 
-        // 게임별 성공 / 실패 기록
-        for (String record : player.getHistory()) {
-            System.out.println(record);
+        // 1. 게임별 결과 출력
+        if (player.getHistory().isEmpty()) {
+            System.out.println("플레이 기록이 없습니다.");
+        } else {
+            for (String record : player.getHistory()) {
+                System.out.println(record);
+            }
         }
 
-        // TODO: MiniGame / Player 수정 후 게임별 획득·감점 점수 출력
+        // 2. 총점과 만점 가져오기
+        int score = player.getScore();
+        int maxScore = player.getMaxScore();
 
-        // 총점 출력
-        System.out.println("총점: " + player.getScore());
+        System.out.println("총점: " + score + " / 만점: " + maxScore);
 
-        // TODO: Player에 getMaxScore() 추가되면 누적 만점 출력
-        // System.out.println("만점: " + player.getMaxScore());
+        // 3. 두뇌 나이 계산
+        if (maxScore > 0) {
+            double brainAge = 60 - 40.0 * score / maxScore;
 
-        // TODO: 누적 만점으로 두뇌 나이 계산
-        // 공식: 60 - 40 × (총점 / 만점)
-        // 만점이 0인 경우는 계산하지 않도록 처리
-        // 두뇌 나이는 20~60세 범위로 제한
+            // 두뇌 나이를 20~60세로 제한
+            brainAge = Math.max(20, Math.min(60, brainAge));
 
+            System.out.printf("두뇌 나이: %.1f세%n", brainAge);
+        } else {
+            System.out.println("두뇌 나이: 계산 불가 (플레이 기록 없음)");
+        }
+
+        // 4. 남은 목숨 출력
         System.out.println("남은 목숨: " + player.getLives());
     }
 }

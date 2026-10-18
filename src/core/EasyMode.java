@@ -24,8 +24,13 @@ public class EasyMode extends Difficulty {
         } else {
             player.loseLife();
         }
+    }
 
+    public GameResult retry(MiniGame game) {
+        System.out.println("\n실패했습니다! Easy 난이도는 재도전 기회가 1번 주어집니다.");
+        System.out.println("=== 재도전 시작! ===");
 
+        return game.playRound(this);
     }
 
     @Override

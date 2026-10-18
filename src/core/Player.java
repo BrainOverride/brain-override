@@ -12,6 +12,7 @@ public class Player {
     private int lives = MAX_LIVES;
     private int score = 0;
     private final List<String> history = new ArrayList<>();
+    private int maxScore = 0;
 
     public Player(String name) {
         this.name = name;
@@ -53,6 +54,23 @@ public class Player {
     public void record(String gameName, GameResult result) {
         // TODO history에 한 줄 추가
         history.add(gameName + " - " + (result.isSuccess() ? "성공" : "실패"));
+    }
+
+    public void record(String gameName, boolean success, int scoreDelta) {
+        history.add(gameName + " - "
+                + (success ? "성공" : "실패")
+                + " " + (scoreDelta > 0 ? "+" : "")
+                + scoreDelta + "점");
+    }
+
+    public void addMaxScore(int amount) {
+        if (amount > 0) {
+            maxScore += amount;
+        }
+    }
+
+    public int getMaxScore() {
+        return maxScore;
     }
 
     public boolean isAlive() {

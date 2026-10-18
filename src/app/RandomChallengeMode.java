@@ -64,6 +64,10 @@ public class RandomChallengeMode extends GameMode {
             System.out.println("[" + (i + 1) + "/" + GAME_COUNT + "] "
                     + game.getName());
 
+            // 현재 게임의 만점 누적
+            player.addMaxScore(difficulty.maxScore());
+
+            // 게임 실행
             game.play(player, difficulty);
 
             System.out.println("현재 점수: " + player.getScore());
