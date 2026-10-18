@@ -69,20 +69,60 @@ public class StroopTest extends MiniGame {
         return ink;
     }
 
+    // ───────────────────────── 출력 ─────────────────────────
+
+    private static void printGuide(Difficulty difficulty) {
+        System.out.printf("=== 스트룹 테스트 (%s) ===%n", difficulty.getLabel());
+        System.out.println("글자의 '뜻'이 아니라 '색'을 고르세요.");
+        printChoices();
+        System.out.println();
+    }
+
+    private static void printChoices() {
+        StringBuilder sb = new StringBuilder();
+        for (StroopColor c : StroopColor.values()) {
+            sb.append(c.number()).append(" ").append(c.label).append("  ");
+        }
+        System.out.println(sb.toString().trim());
+    }
+
     // ───────────────────────── 게임 진행 ─────────────────────────
 
     @Override
     protected GameResult playRound(Difficulty difficulty) {
         double matchRatio = getMatchRatio(difficulty);
+        int correct = 0;
 
-        // TODO: 입력/채점은 다음 커밋에서 구현 — 지금은 문제 생성과 색 출력만 확인
+        printGuide(difficulty);
+        long startTime = System.currentTimeMillis();
+
         for (int q = 1; q <= QUESTIONS; q++) {
             StroopColor word = randomColor();
             StroopColor ink = pickInk(word, matchRatio);
+            StroopColor answer = ink; // 기본 규칙: 정답은 글자의 '색'
+
             System.out.printf("[%d/%d]   %s%s%s%n", q, QUESTIONS, ink.code, word.label, RESET);
+
+            // readInt가 1~4 범위 검증과 재입력을 처리 → 잘못된 입력은 문제 수를 차감하지 않음
+            int input = ConsoleUtil.readInt("입력: ", 1, 4);
+
+            if (input == answer.number()) {
+                correct++;
+                System.out.println("정답!");
+            } else if (input == word.number()) {
+                // 글자 뜻을 고른 오답 = 스트룹 효과에 걸린 것 → 따로 알려줌
+                System.out.printf("글자를 읽었네요! (정답: %d %s)%n", answer.number(), answer.label);
+            } else {
+                System.out.printf("오답 (정답: %d %s)%n", answer.number(), answer.label);
+            }
+            System.out.println();
         }
 
-        return new GameResult(false, 0, getStandardSeconds(difficulty));
+        double elapsedSeconds = (System.currentTimeMillis() - startTime) / 1000.0;
+        boolean success = correct >= GOAL;
+        System.out.printf("%d / %d 정답 → %s%n", correct, QUESTIONS, success ? "성공" : "실패");
+
+        return new GameResult(success, elapsedSeconds, getStandardSeconds(difficulty));
     }
 
     // 테스트용: 메뉴 없이 이 게임만 실행
