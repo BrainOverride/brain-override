@@ -9,7 +9,6 @@ import java.util.*;
 public class CardMatch extends MiniGame {
 
     private static final int COLUMNS = 4;            // 보드 열 수
-    private static final int MEMORIZE_MILLIS = 30000; // 시작 시 정답 공개 시간
     private static final int WRONG_DELAY_MILLIS = 1500;
     private static final int HARD_SHUFFLE_STREAK = 3; // Hard: 연속 실패 시 섞기 기준
 
@@ -79,6 +78,12 @@ public class CardMatch extends MiniGame {
     // 난이도별 시도 횟수 (Easy=12, Normal/Hard=20)
     private static int getMaxTries(Difficulty difficulty) {
         return difficulty.getLabel().equals("Easy") ? 12 : 20;
+    }
+
+    // 난이도별 암기 시간 (Easy=15초, Normal/Hard=20초)
+    // Hard는 판 크기가 Normal과 같고 "섞기 규칙"만 다르므로 암기 시간도 Normal과 같게 둠
+    private static int getMemorizeMillis(Difficulty difficulty) {
+        return difficulty.getLabel().equals("Easy") ? 15000 : 20000;
     }
 
     // 난이도별 시간 보너스 기준 (Easy=90, Normal/Hard=180)
@@ -169,9 +174,10 @@ public class CardMatch extends MiniGame {
         boolean success = false;
 
         // 1. 암기 시간: 정답 공개 → 화면 지우기
-        System.out.printf("%d초 동안 카드 위치를 외우세요!%n", MEMORIZE_MILLIS / 1000);
+        int memorizeMillis = getMemorizeMillis(difficulty);
+        System.out.printf("%d초 동안 카드 위치를 외우세요!%n", memorizeMillis / 1000);
         printBoard(cards, matched, COLUMNS, true);
-        sleep(MEMORIZE_MILLIS);
+        sleep(memorizeMillis);
         clearScreen();
 
         // 타이머는 암기 시간 이후부터 측정
