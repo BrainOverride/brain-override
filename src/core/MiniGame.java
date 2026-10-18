@@ -27,8 +27,11 @@ public abstract class MiniGame {
         } else {
             difficulty.onFail(player, this);
         }
-        // 점수 저장
-        player.record(name, result);
+        int beforeScore = player.getScore();
+
+        // 기존 게임 실행 및 점수 처리 코드
+        int scoreDelta = player.getScore() - beforeScore;
+        player.record(name, result.isSuccess(), scoreDelta);
     }
 
     // 게임마다 다른 부분: 자식이 반드시 구현
