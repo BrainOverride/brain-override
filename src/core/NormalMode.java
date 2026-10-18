@@ -26,9 +26,9 @@ public class NormalMode extends Difficulty {
     }
 
     @Override
-    public void onFail(Player player, MiniGame game) {
-        // TODO
+    public GameResult onFail(Player player, MiniGame game, GameResult failed) {
         player.loseLife();
+        return failed;   // 재도전 없음 → 실패 결과가 최종 결과
     }
 
     @Override

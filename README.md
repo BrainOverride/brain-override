@@ -165,7 +165,7 @@ classDiagram
         <<abstract>>
         +getLabel()* String
         +calcScore(GameResult)* int
-        +onFail(Player, MiniGame)*
+        +onFail(Player, MiniGame, GameResult)* GameResult
     }
     class GameMode {
         <<abstract>>
@@ -230,7 +230,7 @@ classDiagram
 | --- | --- | --- |
 | 모드 선택 | 모드 번호별 if 2갈래 | `modes.get(choice).run(player, games)` |
 | 게임 실행 | 게임 이름별 if 6갈래 | `game.play(player, difficulty)` |
-| 점수 · 패널티 | 난이도 3갈래 × 성공/실패 2갈래 | `difficulty.calcScore(result)`, `difficulty.onFail(player, this)` |
+| 점수 · 패널티 | 난이도 3갈래 × 성공/실패 2갈래 | `difficulty.calcScore(result)`, `result = difficulty.onFail(player, this, result)` |
 | 삼목 AI | 난이도별 if 3갈래 | `ai.choose(board)` |
 | **게임 1개 추가 시 수정 지점** | 위 모든 곳 | **0곳** (새 클래스 작성 + `GameRegistry`에 1줄) |
 
@@ -251,8 +251,8 @@ public abstract class MiniGame {
         // 1. 게임 이름과 난이도 안내 출력
         // 2. playRound(difficulty) 호출 → GameResult 받기
         // 3. 성공이면 player.addScore(difficulty.calcScore(result))
-        //    실패면 difficulty.onFail(player, this)
-        // 4. player.record(name, result)
+        //    실패면 result = difficulty.onFail(player, this, result)  ← 최종 결과로 교체
+        // 4. player.record(name, result.isSuccess(), 점수 변화량)
     }
 
     // 게임마다 다른 부분: 자식이 반드시 구현
@@ -265,7 +265,7 @@ public abstract class MiniGame {
 public abstract class Difficulty {
     public abstract String getLabel();                         // "Easy" / "Normal" / "Hard"
     public abstract int calcScore(GameResult result);
-    public abstract void onFail(Player player, MiniGame game);  // EasyMode는 여기서 game.playRound(this)로 재도전
+    public abstract GameResult onFail(Player player, MiniGame game, GameResult failed);  // 실패 처리 후 최종 결과 반환 (Easy는 재도전 결과)
 }
 ```
 

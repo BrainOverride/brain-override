@@ -16,21 +16,17 @@ public class EasyMode extends Difficulty {
     }
 
     @Override
-    public void onFail(Player player, MiniGame game) {
-        // TODO
+    public GameResult onFail(Player player, MiniGame game, GameResult failed) {
+        System.out.println("\n실패했습니다! Easy 난이도는 재도전 기회가 1번 주어집니다.");
+        System.out.println("=== 재도전 시작! ===");
+
         GameResult retry = game.playRound(this);
         if (retry.isSuccess()) {
             player.addScore(calcScore(retry));
         } else {
             player.loseLife();
         }
-    }
-
-    public GameResult retry(MiniGame game) {
-        System.out.println("\n실패했습니다! Easy 난이도는 재도전 기회가 1번 주어집니다.");
-        System.out.println("=== 재도전 시작! ===");
-
-        return game.playRound(this);
+        return retry;   // 재도전 결과가 최종 결과
     }
 
     @Override

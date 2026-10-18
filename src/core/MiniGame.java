@@ -24,27 +24,12 @@ public abstract class MiniGame {
         // GameResult 받기
         GameResult result = playRound(difficulty);
 
-        // 3. Easy 난이도에서 실패한 경우 재도전
-        if (!result.isSuccess() && difficulty instanceof EasyMode) {
-
-            // 재도전 결과를 최종 결과로 저장
-            result = ((EasyMode) difficulty).retry(this);
-
-            if (result.isSuccess()) {
-                player.addScore(difficulty.calcScore(result));
-            } else {
-                player.loseLife();
-            }
-
-        } else if (result.isSuccess()) {
-
-            // 첫 번째 게임에서 성공
+        if (result.isSuccess()) {
             player.addScore(difficulty.calcScore(result));
-
         } else {
-
-            // Normal / Hard 실패 처리
-            difficulty.onFail(player, this);
+            // 실패 처리는 난이도에 위임 (다형성). Easy면 재도전 결과가, 아니면 실패 결과가 돌아옴
+            // → 여기서는 어떤 난이도인지 묻지 않음 (instanceof 없음)
+            result = difficulty.onFail(player, this, result);
         }
 
         // 게임 전후 실제 점수 차이 계산

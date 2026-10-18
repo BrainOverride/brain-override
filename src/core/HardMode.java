@@ -25,10 +25,10 @@ public class HardMode extends Difficulty {
     }
 
     @Override
-    public void onFail(Player player, MiniGame game) {
-        // TODO
+    public GameResult onFail(Player player, MiniGame game, GameResult failed) {
         player.loseLife();
         player.deductScore(50);
+        return failed;   // 재도전 없음 → 실패 결과가 최종 결과
     }
 
     @Override
